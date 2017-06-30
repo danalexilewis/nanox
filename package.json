@@ -1,0 +1,49 @@
+{
+  "name": "nanox",
+  "version": "0.0.0",
+  "description": "Budgeting and Financial Transparency Tool",
+  "main": "index.js",
+  "scripts": {
+    "start": "budo . -d --serve bundle.js --live",
+    "test:deps": "dependency-check . && dependency-check . --extra --no-dev -i browserify -i es2040",
+    "test:lint": "standard",
+    "test:node": "NODE_ENV=test run-default tape test/*.js --",
+    "test:coverage": "NODE_ENV=test nyc npm run test:node",
+    "test:coverage:report": "nyc report --reporter=lcov npm run test:node",
+    "test": "npm-run-all -s test:node test:lint test:deps",
+    "build": "browserify . -o bundle.js",
+    "dist": "mkdir -p dist && bash -c 'cp *.{js,html,css} dist'",
+    "push": "gh-pages -d dist",
+    "deploy": "npm-run-all -s build dist push"
+  },
+  "browserify": {
+    "transform": [
+      "es2040"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahdinosaur/nanox.git"
+  },
+  "keywords": [],
+  "author": "Mikey <michael.williams@enspiral.com> (http://dinosaur.is)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ahdinosaur/nanox/issues"
+  },
+  "homepage": "https://github.com/ahdinosaur/nanox#readme",
+  "devDependencies": {
+    "budo": "^10.0.3",
+    "dependency-check": "^2.7.0",
+    "gh-pages": "^1.0.0",
+    "npm-run-all": "^4.0.1",
+    "nyc": "^10.1.2",
+    "run-default": "^1.0.0",
+    "standard": "^8.6.0",
+    "tape": "^4.6.3"
+  },
+  "dependencies": {
+    "browserify": "^14.4.0",
+    "es2040": "^1.2.3"
+  }
+}

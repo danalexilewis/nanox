@@ -1,4 +1,5 @@
 # nanox
+
 Budgeting and Financial Transparency Tool
 
 nanox is a modeling tool and was born out of a need within Root Systems to have both a living budget and financial transparency so that all members within the organisation are informed and have the opportunity to act with agency.
