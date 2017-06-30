@@ -2,6 +2,7 @@ const React = require('react')
 const ReactDOM = require('react-dom')
 const h = require('react-hyperscript')
 const ReactNodeGraph = require('react-node-graph')
+const { compose, withState, withHandlers } = require('recompose')
 
 var exampleGraph = {
   "nodes":[
@@ -30,17 +31,77 @@ var exampleGraph = {
   ]
 };
 
-const element = h(ReactNodeGraph, {
-  data: exampleGraph,
-  onNodeMove: (nid, pos) => console.log('onNodeMove', nid, pos),
-  onNodeStartMove: (nid) => console.log('onNodeStartMove', nid),
-  onNewConnector: (n1, o, n2, i) => console.log('onNewConnector', n1, o, n2, i),
-  onRemoveConnector: (connector) => console.log('onRemoveConnector', connector),
-  onNodeSelect: (nid) => console.log('onNodeSelect', nid),
-  onNodeDeselect: (nid) => console.log('onNodeDeselect', nid)
+const NodeGraph = compose(
+  withState('nodes', 'setNodes', exampleGraph.nodes),
+  withState('connections', 'setConnections', exampleGraph.connections),
+  withHandlers({
+    onNewConnector: props => (fromNode,fromPin,toNode,toPin) => {
+      console.log('new connector', connector)
+
+      let connections = [...props.connections, {
+        from_node : fromNode,
+        from : fromPin,
+        to_node : toNode,
+        to : toPin
+      }]
+
+      props.setConnections(connections)
+    },
+
+    onRemoveConnector: (props) => (connector) => {
+      console.log('remove connector', connector)
+
+      let connections = [...props.connections]
+      connections = connections.filter((connection) => {
+        return connection != connector
+      })
+
+      props.setConnections(connections)
+    },
+
+    onNodeMove: (props) => (nid, pos) => { 
+      console.log('end move : ' + nid, pos)
+    },
+
+    onNodeStartMove: (props) => (nid) => { 
+      console.log('start move : ' + nid)
+    },
+
+    handleNodeSelect: (props) => (nid) => {
+      console.log('node selected : ' + nid)
+    },
+
+    handleNodeDeselect: (props) => (nid) => {
+      console.log('node deselected : ' + nid)
+    }
+  })
+)((props) => {
+  const {
+    nodes,
+    connections,
+    onNodeMove,
+    onNodeStartMove,
+    onNewConnector,
+    onRemoveConnector,
+    handleNodeSelect,
+    handleNodeDeselect
+  } = props
+
+  return h(
+    ReactNodeGraph,
+    {
+      data: { nodes, connections },
+      onNodeMove,
+      onNodeStartMove,
+      onNewConnector,
+      onRemoveConnector,
+      onNodeSelect: handleNodeSelect,
+      onNodeDeselect: handleNodeDeselect
+    }
+  )
 })
 
 ReactDOM.render(
-  element,
+  h(NodeGraph),
   document.body.querySelector('main')
 )
