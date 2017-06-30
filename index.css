@@ -1,47 +1,221 @@
 
-* {
-  margin: 0;
-  padding: 0; }
+@import url(//fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900,200italic,300italic,400italic,600italic,700italic,900italic);
 
-html, body, main {
-  height: 100%; }
-
-main {
-  display: flex;
-  background: #3c3c3c; }
-
-.body {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column; }
-  .body .header {
-    display: flex;
-    background: #1e1e1e;
-    flex-grow: 0;
-    flex-shrink: 0;
-    color: white;
-    font-family: Helvetica, Arial;
-    padding: 10px; }
-    .body .header > * {
-      align-self: center; }
-  .body .content {
-    display: flex;
-    flex-grow: 1; }
-    .body .content .tray {
-      min-width: 200px;
-      background: #141414;
-      flex-grow: 0;
-      flex-shrink: 0; }
-
-.storm-diagrams-canvas {
-  background: rgba(0, 0, 0, 0.2);
-  background-image: linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent);
-  background-size: 50px 50px; }
-  .storm-diagrams-canvas path {
-    stroke: rgba(255, 255, 255, 0.5); }
-  .storm-diagrams-canvas .pointui {
-    fill: rgba(255, 255, 255, 0.5); }
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+    color: #323232;
+    line-height: 20px;
+    overflow-x: hidden;
+    font-size: 14px;
+    font-weight: 400;
+    text-rendering:optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+	background: url('gridtile.png');
+}
 
 
-/* from ./node_modules/storm-react-diagrams/dist/style.css */
-.storm-diagrams-canvas{position:relative;flex-grow:1;display:flex;cursor:move;overflow:hidden}.storm-diagrams-canvas .point{fill:rgba(255,255,255,0.5)}.storm-diagrams-canvas .point.selected{fill:#00c0ff}.storm-diagrams-canvas .selector{position:absolute;background-color:rgba(0,192,255,0.2);border:solid 2px #00c0ff}.storm-diagrams-canvas svg{position:absolute;height:100%;width:100%;transform-origin:0 0;overflow:visible}.storm-diagrams-canvas .node-view{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;transform-origin:0 0}.storm-diagrams-canvas .node{position:absolute;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;cursor:move;pointer-events:all}.storm-diagrams-canvas .node.selected>*{border-color:#00c0ff !important;-webkit-filter:drop-shadow(0 0 20px rgba(0,192,255,0.5))}@keyframes dash{from{stroke-dashoffset:24}to{stroke-dashoffset:0}}.storm-diagrams-canvas path{fill:none;pointer-events:all}.storm-diagrams-canvas path.selected{stroke:#00c0ff !important;stroke-dasharray:10,2;animation:dash 1s linear infinite}.storm-diagrams-canvas .port{width:15px;height:15px;background:rgba(255,255,255,0.1)}.storm-diagrams-canvas .port:hover,.storm-diagrams-canvas .port.selected{background:#c0ff00}.storm-diagrams-canvas .basic-node{background-color:#1e1e1e;border-radius:5px;font-family:Arial;color:white;border:solid 2px black;overflow:visible;font-size:11px;box-shadow:0 0 10px rgba(0,0,0,0.5)}.storm-diagrams-canvas .basic-node .title{background:rgba(0,0,0,0.3);display:flex;white-space:nowrap}.storm-diagrams-canvas .basic-node .title>*{align-self:center}.storm-diagrams-canvas .basic-node .title .fa{padding:5px;opacity:0.2;cursor:pointer}.storm-diagrams-canvas .basic-node .title .fa:hover{opacity:1.0}.storm-diagrams-canvas .basic-node .title .name{flex-grow:1;padding:5px 5px}.storm-diagrams-canvas .basic-node .ports{display:flex;background-image:linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))}.storm-diagrams-canvas .basic-node .ports .in,.storm-diagrams-canvas .basic-node .ports .out{flex-grow:1;display:flex;flex-direction:column}.storm-diagrams-canvas .basic-node .ports .in-port,.storm-diagrams-canvas .basic-node .ports .out-port{display:flex;margin-top:1px}.storm-diagrams-canvas .basic-node .ports .in-port>*,.storm-diagrams-canvas .basic-node .ports .out-port>*{align-self:center}.storm-diagrams-canvas .basic-node .ports .in-port .name,.storm-diagrams-canvas .basic-node .ports .out-port .name{padding:0 5px}.storm-diagrams-canvas .basic-node .ports .out-port{justify-content:flex-end}.storm-diagrams-canvas .basic-node .ports .out-port .name{justify-content:flex-end;text-align:right}
+.node {
+	position: absolute; 
+	width:180px;
+    border: 1px solid transparent;
+	border-radius: 4px;
+	-webkit-box-shadow: 6px 6px 28px -2px rgba(0,0,0,0.4);
+	-moz-box-shadow: 6px 6px 28px -2px rgba(0,0,0,0.4);
+	box-shadow: 6px 6px 28px -2px rgba(0,0,0,0.4);
+	background-color: rgba(0,0,0,.7);
+    user-select: none;
+}
+
+.node.selected {
+    border: 1px solid #666;
+    box-shadow: 0 0 8px 3px #555;
+}
+
+.node-seperator {
+	color: black;
+	border-color: black;
+}
+
+.node-content {
+	padding: 10px;
+}
+
+.node-title {
+	font-size:10px;
+}
+
+.node-header {
+	cursor: all-scroll;
+
+	background: rgba(248,80,50,1);
+	
+	padding-left: 10px;
+    text-transform: uppercase;
+
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+
+	border-bottom: 1px solid #353535;
+
+	padding-top: 3px;
+    height: 23px;
+
+    font-size: 13px;
+    letter-spacing: 1px;
+
+	color:white;
+	font-weight: 600;
+}
+
+.connector {
+	fill:none;
+	stroke:#dadada; 
+	stroke-width:2;
+	-webkit-box-shadow: 6px 6px 28px -2px rgba(0,0,0,0.75);
+	-moz-box-shadow: 6px 6px 28px -2px rgba(0,0,0,0.75);
+	box-shadow: 6px 6px 28px -2px rgba(0,0,0,0.75);
+	    -webkit-filter: drop-shadow( -5px -5px 5px #000 );
+            filter: drop-shadow( -5px -5px 5px #000 );
+}
+
+.connector-click-area {
+	cursor: pointer;
+	fill:none;
+	stroke:transparent;
+	stroke-width:15;
+}
+
+.connector-click-area:hover + .connector,
+.connector:hover {
+	cursor: pointer;
+	stroke-width: 4;
+}
+
+.connector.selected {
+	stroke: #337ab7;
+}
+
+.trash-icon .trash-icon-trashcan {
+    opacity: 0.8;
+}
+
+.trash-icon:hover {
+    cursor: pointer;
+}
+
+.trash-icon:hover .trash-icon-bg {
+    stroke:#337ab7;
+    stroke-width: 2;
+    opacity: 0.5;
+}
+
+.trash-icon:hover .trash-icon-trashcan {
+    opacity: 1;
+}
+
+.nodeInputWrapper {
+	width : 65%;
+	float: left;
+}
+
+.nodeOutputWrapper {
+	width : 35%;
+	float: right;
+	text-align: right;
+}
+
+
+.nodeInputList, .nodeOutputList {
+	list-style: none;
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.nodeOutputList li {
+	cursor: pointer;
+}
+
+.nodeOutputList li a {
+	font-size:10px;
+	text-decoration: none;
+    background: transparent;
+    box-sizing: border-box;
+    color: #337ab7;
+}
+
+.nodeOutputList li a i {
+	padding-left: 6px;
+}
+
+.nodeOutputList li:hover a i {
+	vertical-align: top;
+	font-size: 15px;
+	margin-top: 3px;
+	margin-right: -2px;
+	padding-left: 3px;
+}
+
+.nodeOutputList li:hover a {
+	vertical-align: top;
+	font-weight: bold;
+}
+
+.nodeInputList li a {
+	cursor: default;
+	font-size:10px;
+	color: #999999;
+    display: block;
+    text-decoration: none;
+    background: transparent;
+    box-sizing: border-box;
+}
+.nodeInputList li a i {
+	padding-right: 6px;
+}
+
+.dragging .nodeInputList li a i.hover {
+	vertical-align: top;
+	font-size: 15px;
+	color: #ffffff;
+	margin-top: 2px;
+	margin-left: -2px;
+	padding-right: 3px;
+}
+
+.dragging .nodeInputList li a i.hover + span {
+	vertical-align: top;
+	font-weight: bold;
+	color: #ffffff;
+}
+
+.inputDot {
+	width: 12px;
+    height: 12px;
+    display: inline-block;
+    position: absolute;
+    background: #e6e6e6;
+    border-radius: 50%;
+    top: 0;
+    right: 3px;
+    left: auto;
+    border: 2px solid #fff;
+}
+
+
+.EndPoint { fill:none; stroke:#888888; stroke-width:2 }
+
+.pin-input {
+	    background: transparent;
+    padding: 5px;
+    width: 50px;
+    display: inline-block;
+    margin-left: 16px;
+    border-color: #333333;
+}
+
+.node-menu {
+	display: block;
+	z-index: 10020;
+}

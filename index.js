@@ -1,79 +1,46 @@
-const SRD = require('storm-react-diagrams')
 const React = require('react')
 const ReactDOM = require('react-dom')
+const h = require('react-hyperscript')
+const ReactNodeGraph = require('react-node-graph')
 
-class BodyWidget extends React.Component {
-  render () {
-    return (
-                      React.DOM.div({className: 'body'},
-                              React.DOM.div({className: 'header'},
-                                      React.DOM.div({className: 'title'}, 'Storm React Diagrams - Demo 5')
-                              ),
-                              React.DOM.div({className: 'content'},
-                                      TrayWidgetFactory(),
-                                      React.createElement(SRD.DiagramWidget, {diagramEngine: this.props.app.getDiagramEngine()})
-                              )
-                      )
-    )
-  }
-}
+var exampleGraph = {
+  "nodes":[
+    {"nid":1,"type":"WebGLRenderer","x":1479,"y":351,"fields":{"in":[{"name":"width"},{"name":"height"},{"name":"scene"},{"name":"camera"},{"name":"bg_color"},{"name":"postfx"},{"name":"shadowCameraNear"},{"name":"shadowCameraFar"},{"name":"shadowMapWidth"},{"name":"shadowMapHeight"},{"name":"shadowMapEnabled"},{"name":"shadowMapSoft"}],"out":[]}},
+    {"nid":14,"type":"Camera","x":549,"y":478,"fields":{"in":[{"name":"fov"},{"name":"aspect"},{"name":"near"},{"name":"far"},{"name":"position"},{"name":"target"},{"name":"useTarget"}],"out":[{"name":"out"}]}},
+    {"nid":23,"type":"Scene","x":1216,"y":217,"fields":{"in":[{"name":"children"},{"name":"position"},{"name":"rotation"},{"name":"scale"},{"name":"doubleSided"},{"name":"visible"},{"name":"castShadow"},{"name":"receiveShadow"}],"out":[{"name":"out"}]}},
+    {"nid":35,"type":"Merge","x":948,"y":217,"fields":{"in":[{"name":"in0"},{"name":"in1"},{"name":"in2"},{"name":"in3"},{"name":"in4"},{"name":"in5"}],"out":[{"name":"out"}]}},
+    {"nid":45,"type":"Color","x":950,"y":484,"fields":{"in":[{"name":"rgb"},{"name":"r"},{"name":"g"},{"name":"b"}],"out":[{"name":"rgb"},{"name":"r"},{"name":"g"},{"name":"b"}]}},
+    {"nid":55,"type":"Vector3","x":279,"y":503,"fields":{"in":[{"name":"xyz"},{"name":"x"},{"name":"y"},{"name":"z"}],"out":[{"name":"xyz"},{"name":"x"},{"name":"y"},{"name":"z"}]}},
+    {"nid":65,"type":"ThreeMesh","x":707,"y":192,"fields":{"in":[{"name":"children"},{"name":"position"},{"name":"rotation"},{"name":"scale"},{"name":"doubleSided"},{"name":"visible"},{"name":"castShadow"},{"name":"receiveShadow"},{"name":"geometry"},{"name":"material"},{"name":"overdraw"}],"out":[{"name":"out"}]}},
+    {"nid":79,"type":"Timer","x":89,"y":82,"fields":{"in":[{"name":"reset"},{"name":"pause"},{"name":"max"}],"out":[{"name":"out"}]}},
+    {"nid":84,"type":"MathMult","x":284,"y":82,"fields":{"in":[{"name":"in"},{"name":"factor"}],"out":[{"name":"out"}]}},
+    {"nid":89,"type":"Vector3","x":486,"y":188,"fields":{"in":[{"name":"xyz"},{"name":"x"},{"name":"y"},{"name":"z"}],"out":[{"name":"xyz"},{"name":"x"},{"name":"y"},{"name":"z"}]}}
+  ],
+  "connections":[
+    {"from_node":23,"from":"out","to_node":1,"to":"scene"},
+    {"from_node":14,"from":"out","to_node":1,"to":"camera"},
+    {"from_node":14,"from":"out","to_node":35,"to":"in5"},
+    {"from_node":35,"from":"out","to_node":23,"to":"children"},
+    {"from_node":45,"from":"rgb","to_node":1,"to":"bg_color"},
+    {"from_node":55,"from":"xyz","to_node":14,"to":"position"},
+    {"from_node":65,"from":"out","to_node":35,"to":"in0"},
+    {"from_node":79,"from":"out","to_node":84,"to":"in"},
+    {"from_node":89,"from":"xyz","to_node":65,"to":"rotation"},
+    {"from_node":84,"from":"out","to_node":89,"to":"y"}
+  ]
+};
 
-var BodyWidgetFactory = React.createFactory(BodyWidget)
+const element = h(ReactNodeGraph, {
+  data: exampleGraph,
+  onNodeMove: (nid, pos) => console.log('onNodeMove', nid, pos),
+  onNodeStartMove: (nid) => console.log('onNodeStartMove', nid),
+  onNewConnector: (n1, o, n2, i) => console.log('onNewConnector', n1, o, n2, i),
+  onRemoveConnector: (connector) => console.log('onRemoveConnector', connector),
+  onNodeSelect: (nid) => console.log('onNodeSelect', nid),
+  onNodeDeselect: (nid) => console.log('onNodeDeselect', nid)
+})
 
-class TrayWidget extends React.Component {
-  render () {
-    return (
-                      React.DOM.div({className: 'tray'},
-                              this.props.children
-                      )
-    )
-  }
-}
-
-var TrayWidgetFactory = React.createFactory(TrayWidget)
-
-class Application {
-  constructor () {
-    this.diagramEngine = new SRD.DiagramEngine()
-
-    this.diagramEngine.registerNodeFactory(new SRD.DefaultNodeFactory())
-    this.diagramEngine.registerLinkFactory(new SRD.DefaultLinkFactory())
-
-    this.newModel()
-  }
-
-  newModel () {
-    this.activeModel = new SRD.DiagramModel()
-    this.diagramEngine.setDiagramModel(this.activeModel)
-
-    var node1 = new SRD.DefaultNodeModel('Node 1', 'rgb(0,192,255)')
-    var port1 = node1.addPort(new SRD.DefaultPortModel(false, 'out-1', 'Out'))
-    node1.x = 100
-    node1.y = 100
-
-    var node2 = new SRD.DefaultNodeModel('Node 2', 'rgb(192,255,0)')
-    var port2 = node2.addPort(new SRD.DefaultPortModel(true, 'in-1', 'IN'))
-    node2.x = 400
-    node2.y = 100
-
-    var link1 = new SRD.LinkModel()
-    link1.setSourcePort(port1)
-    link1.setTargetPort(port2)
-
-    this.activeModel.addNode(node1)
-    this.activeModel.addNode(node2)
-    this.activeModel.addLink(link1)
-  }
-
-  getActiveDiagram () {
-    return this.activeModel
-  }
-
-  getDiagramEngine () {
-    return this.diagramEngine
-  }
-}
-
-var app = new Application()
-
-ReactDOM.render(BodyWidgetFactory({app: app}), document.body.querySelector('main'))
+ReactDOM.render(
+  element,
+  document.body.querySelector('main')
+)
