@@ -14,82 +14,6 @@ function Node (props) {
   })
 }
 
-/*
-function Flow (props) {
-  const { from, to } = props
-  const { id: fromId, x: fromX, y: fromY, color: fromColor } = from
-  const { id: toId, x: toX, y: toY, color: toColor } = to
-  const flowId = `${fromId}-${toId}`
-
-  // TODO style the line to be a gradient
-  // from source to sink
-
-  return h('g', [
-    h('defs', [
-      h('linearGradient', {
-        id: flowId,
-        x1: '0%',
-        y1: '0%',
-        x2: '100%',
-        y2: '0%',
-      }, [
-        h('stop', {
-          offset: '0%',
-          stopColor: fromColor
-        }),
-        h('stop', {
-          offset: '100%',
-          stopColor: toColor
-        })
-      ])
-    ]),
-    h('line', {
-      x1: fromX,
-      y1: fromY,
-      x2: toX,
-      // https://stackoverflow.com/a/34687362
-      y2: (fromY !== toY) ? toY : toY + 0.0001,
-      strokeWidth: 0.02,
-      //stroke: `url(#${flowId})`
-      stroke: `url(#flow)`
-    })
-  ])
-}
-*/
-
-/*
-function Flow (props) {
-  const { from, to } = props
-  const { id: fromId, x: fromX, y: fromY, color: fromColor } = from
-  const { id: toId, x: toX, y: toY, color: toColor } = to
-  const flowId = `${fromId}-${toId}`
-
-  return <g>
-    <defs>
-      <linearGradient
-        id={flowId}
-        x1={'0%'}
-        y1={'0%'}
-        x2={'100%'}
-        y2={'0%'}
-      >
-        <stop offset={'0%'} stopColor={fromColor} />
-        <stop offset={'100%'} stopColor={toColor} />
-      </linearGradient>
-    </defs>
-    <line
-      x1={fromX}
-      y1={fromY}
-      x2={toX}
-      // https://stackoverflow.com/a/34687362
-      y2={(fromY !== toY) ? toY : toY + 0.0001}
-      strokeWidth={0.02}
-      stroke={`url(#${flowId})`}
-    />
-  </g>
-}
-*/
-
 function Flow (props) {
   const { from, to } = props
   const { id: fromId, x: fromX, y: fromY, color: fromColor } = from
@@ -97,9 +21,8 @@ function Flow (props) {
   const flowId = `${fromId}-${toId}`
 
   // why can't we use react-hyperscript here?
-
   return React.createElement('g', {},
-    React.createElement('defs', {},
+    h('defs', {}, [
       React.createElement('linearGradient', {
         id: flowId,
         x1: '0%',
@@ -107,17 +30,17 @@ function Flow (props) {
         x2: '100%',
         y2: '0%',
       },
-        React.createElement('stop', {
+        h('stop', {
           offset: '0%',
           stopColor: fromColor
         }),
-        React.createElement('stop', {
+        h('stop', {
           offset: '100%',
           stopColor: toColor
         })
       )
-    ),
-    React.createElement('line', {
+    ]),
+    h('line', {
       x1: fromX,
       y1: fromY,
       x2: toX,
