@@ -29,3 +29,24 @@ nanox is a platform for reports. It attests that reports are particular views of
 
 ### Time Travel Transactions
 nanox is a transactional system. The addition or removal of any part of the model as well as all transactions throught it will be recorded as an append only log. A user will be able to traverse this history and view the model at any point in time.
+
+## proof of concept notes
+
+each node has
+
+- state
+  - balance
+- actions
+  - can be queued up external or by other nodes async
+- updater
+  - can sync access own state or other node's state
+  - can return actions to queue on other nodes
+
+on each tick
+
+- send each queued up action to respective node
+- send TICK action to each node
+
+### components
+
+

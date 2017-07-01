@@ -1,107 +1,169 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
-const h = require('react-hyperscript')
-const ReactNodeGraph = require('react-node-graph')
-const { compose, withState, withHandlers } = require('recompose')
+//const h = require('react-hyperscript')
+const randomNumberInRange = require('random-number-in-range')
 
-var exampleGraph = {
-  "nodes":[
-    {"nid":1,"type":"WebGLRenderer","x":1479,"y":351,"fields":{"in":[{"name":"width"},{"name":"height"},{"name":"scene"},{"name":"camera"},{"name":"bg_color"},{"name":"postfx"},{"name":"shadowCameraNear"},{"name":"shadowCameraFar"},{"name":"shadowMapWidth"},{"name":"shadowMapHeight"},{"name":"shadowMapEnabled"},{"name":"shadowMapSoft"}],"out":[]}},
-    {"nid":14,"type":"Camera","x":549,"y":478,"fields":{"in":[{"name":"fov"},{"name":"aspect"},{"name":"near"},{"name":"far"},{"name":"position"},{"name":"target"},{"name":"useTarget"}],"out":[{"name":"out"}]}},
-    {"nid":23,"type":"Scene","x":1216,"y":217,"fields":{"in":[{"name":"children"},{"name":"position"},{"name":"rotation"},{"name":"scale"},{"name":"doubleSided"},{"name":"visible"},{"name":"castShadow"},{"name":"receiveShadow"}],"out":[{"name":"out"}]}},
-    {"nid":35,"type":"Merge","x":948,"y":217,"fields":{"in":[{"name":"in0"},{"name":"in1"},{"name":"in2"},{"name":"in3"},{"name":"in4"},{"name":"in5"}],"out":[{"name":"out"}]}},
-    {"nid":45,"type":"Color","x":950,"y":484,"fields":{"in":[{"name":"rgb"},{"name":"r"},{"name":"g"},{"name":"b"}],"out":[{"name":"rgb"},{"name":"r"},{"name":"g"},{"name":"b"}]}},
-    {"nid":55,"type":"Vector3","x":279,"y":503,"fields":{"in":[{"name":"xyz"},{"name":"x"},{"name":"y"},{"name":"z"}],"out":[{"name":"xyz"},{"name":"x"},{"name":"y"},{"name":"z"}]}},
-    {"nid":65,"type":"ThreeMesh","x":707,"y":192,"fields":{"in":[{"name":"children"},{"name":"position"},{"name":"rotation"},{"name":"scale"},{"name":"doubleSided"},{"name":"visible"},{"name":"castShadow"},{"name":"receiveShadow"},{"name":"geometry"},{"name":"material"},{"name":"overdraw"}],"out":[{"name":"out"}]}},
-    {"nid":79,"type":"Timer","x":89,"y":82,"fields":{"in":[{"name":"reset"},{"name":"pause"},{"name":"max"}],"out":[{"name":"out"}]}},
-    {"nid":84,"type":"MathMult","x":284,"y":82,"fields":{"in":[{"name":"in"},{"name":"factor"}],"out":[{"name":"out"}]}},
-    {"nid":89,"type":"Vector3","x":486,"y":188,"fields":{"in":[{"name":"xyz"},{"name":"x"},{"name":"y"},{"name":"z"}],"out":[{"name":"xyz"},{"name":"x"},{"name":"y"},{"name":"z"}]}}
-  ],
-  "connections":[
-    {"from_node":23,"from":"out","to_node":1,"to":"scene"},
-    {"from_node":14,"from":"out","to_node":1,"to":"camera"},
-    {"from_node":14,"from":"out","to_node":35,"to":"in5"},
-    {"from_node":35,"from":"out","to_node":23,"to":"children"},
-    {"from_node":45,"from":"rgb","to_node":1,"to":"bg_color"},
-    {"from_node":55,"from":"xyz","to_node":14,"to":"position"},
-    {"from_node":65,"from":"out","to_node":35,"to":"in0"},
-    {"from_node":79,"from":"out","to_node":84,"to":"in"},
-    {"from_node":89,"from":"xyz","to_node":65,"to":"rotation"},
-    {"from_node":84,"from":"out","to_node":89,"to":"y"}
-  ]
-};
-
-const NodeGraph = compose(
-  withState('nodes', 'setNodes', exampleGraph.nodes),
-  withState('connections', 'setConnections', exampleGraph.connections),
-  withHandlers({
-    onNewConnector: props => (fromNode,fromPin,toNode,toPin) => {
-      console.log('new connector', connector)
-
-      let connections = [...props.connections, {
-        from_node : fromNode,
-        from : fromPin,
-        to_node : toNode,
-        to : toPin
-      }]
-
-      props.setConnections(connections)
-    },
-
-    onRemoveConnector: (props) => (connector) => {
-      console.log('remove connector', connector)
-
-      let connections = [...props.connections]
-      connections = connections.filter((connection) => {
-        return connection != connector
-      })
-
-      props.setConnections(connections)
-    },
-
-    onNodeMove: (props) => (nid, pos) => { 
-      console.log('end move : ' + nid, pos)
-    },
-
-    onNodeStartMove: (props) => (nid) => { 
-      console.log('start move : ' + nid)
-    },
-
-    handleNodeSelect: (props) => (nid) => {
-      console.log('node selected : ' + nid)
-    },
-
-    handleNodeDeselect: (props) => (nid) => {
-      console.log('node deselected : ' + nid)
-    }
+/*
+function Node (props) {
+  const { node } = props
+  const { x, y, value, color } = node
+  return h('circle', {
+    cx: x,
+    cy: y,
+    r: value,
+    fill: color
   })
-)((props) => {
-  const {
-    nodes,
-    connections,
-    onNodeMove,
-    onNodeStartMove,
-    onNewConnector,
-    onRemoveConnector,
-    handleNodeSelect,
-    handleNodeDeselect
-  } = props
+}
 
-  return h(
-    ReactNodeGraph,
-    {
-      data: { nodes, connections },
-      onNodeMove,
-      onNodeStartMove,
-      onNewConnector,
-      onRemoveConnector,
-      onNodeSelect: handleNodeSelect,
-      onNodeDeselect: handleNodeDeselect
-    }
-  )
-})
+function Flow (props) {
+  const { from, to } = props
+  const { id: fromId, x: fromX, y: fromY, color: fromColor } = from
+  const { id: toId, x: toX, y: toY, color: toColor } = to
+  const flowId = `${fromId}-${toId}`
+
+  // TODO style the line to be a gradient
+  // from source to sink
+
+  return h('g', [
+    h('defs', [
+      h('linearGradient', {
+        id: flowId,
+        x1: '0%',
+        y1: '0%',
+        x2: '100%',
+        y2: '0%',
+      }, [
+        h('stop', {
+          offset: '0%',
+          stopColor: fromColor
+        }),
+        h('stop', {
+          offset: '100%',
+          stopColor: toColor
+        })
+      ])
+    ]),
+    h('line', {
+      x1: fromX,
+      y1: fromY,
+      x2: toX,
+      // https://stackoverflow.com/a/34687362
+      y2: (fromY !== toY) ? toY : toY + 0.0001,
+      strokeWidth: 0.02,
+      //stroke: `url(#${flowId})`
+      stroke: `url(#flow)`
+    })
+  ])
+}
+
+function Graph (props) {
+  const source = {
+    id: 'source',
+    x: 0.3,
+    y: 0.5,
+    value: 0.05,
+    color: randomColor()
+  }
+  const sink = {
+    id: 'sink',
+    x: 0.7,
+    y: 0.5,
+    value: 0.05,
+    color: randomColor()
+  }
+  return h('svg', {
+    viewBox: '0 0 1 1',
+    preserveAspectRatio: 'none'
+  }, [
+    h(Node, {
+      node: source
+    }),
+    h(Flow, {
+      from: source,
+      to: sink
+    }),
+    h(Node, {
+      node: sink
+    })
+  ])
+}
 
 ReactDOM.render(
-  h(NodeGraph),
-  document.body.querySelector('main')
+  h(Graph),
+  document.body.querySelector('.main')
+)
+
+function randomColor () {
+  const hue = randomNumberInRange(0, 360)
+  const saturation = '100%'
+  const lightness = '50%'
+  return `hsl(${hue}, ${saturation}, ${lightness})`
+}
+*/
+
+function Node (props) {
+  const { node } = props
+  const { x, y, value, color } = node
+  return <circle cx={x} cy={y} r={value} fill={color} />
+}
+
+function Flow (props) {
+  const { from, to } = props
+  const { id: fromId, x: fromX, y: fromY, color: fromColor } = from
+  const { id: toId, x: toX, y: toY, color: toColor } = to
+  const flowId = `${fromId}-${toId}`
+
+  return <g>
+    <defs>
+      <linearGradient
+        id={flowId}
+        x1={'0%'}
+        y1={'0%'}
+        x2={'100%'}
+        y2={'0%'}
+      >
+        <stop offset={'0%'} stopColor={fromColor} />
+        <stop offset={'100%'} stopColor={toColor} />
+      </linearGradient>
+    </defs>
+    <line
+      x1={fromX}
+      y1={fromY}
+      x2={toX}
+      // https://stackoverflow.com/a/34687362
+      y2={(fromY !== toY) ? toY : toY + 0.0001}
+      strokeWidth={0.02}
+      stroke={`url(#${flowId})`}
+    />
+  </g>
+}
+
+function Graph (props) {
+  const source = {
+    id: 'source',
+    x: 0.3,
+    y: 0.5,
+    value: 0.05,
+    color: 'rgb(255, 0, 0)'
+  }
+  const sink = {
+    id: 'sink',
+    x: 0.7,
+    y: 0.5,
+    value: 0.05,
+    color: 'rgb(0, 255, 0)'
+  }
+  return <svg
+    viewBox={'0 0 1 1'}
+    preserveAspectRatio={'none'}
+  >
+  	<Node node={source} />
+    <Flow from={source} to={sink} />
+    <Node node={sink} />
+  </svg>
+}
+
+ReactDOM.render(
+  <Graph />,
+  document.body.querySelector('.main')
 )
